@@ -1,4 +1,5 @@
-const STORAGE_KEY = 'stillpoint-reflections-v1';
+const STORAGE_KEY = 'ekagra-reflections-v1';
+const LEGACY_STORAGE_KEY = 'stillpoint-reflections-v1';
 const chatBox = document.querySelector('#chat-messages');
 const input = document.querySelector('#chat-input');
 const form = document.querySelector('#chat-form');
@@ -115,12 +116,12 @@ function makeMessage(role, content, sources = [], typing = false) {
   row.className = `message ${role === 'user' ? 'user-message' : 'assistant-message'}${typing ? ' typing' : ''}`;
   const avatar = document.createElement('div');
   avatar.className = 'message-avatar';
-  avatar.textContent = role === 'user' ? 'Y' : 's';
+  avatar.textContent = role === 'user' ? 'Y' : 'e';
   const wrap = document.createElement('div');
   wrap.className = 'bubble-wrap';
   const speaker = document.createElement('span');
   speaker.className = 'speaker';
-  speaker.textContent = role === 'user' ? 'YOU' : 'STILLPOINT · AI REFLECTION';
+  speaker.textContent = role === 'user' ? 'YOU' : 'EKAGRA · AI REFLECTION';
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   renderMarkdown(bubble, content);
@@ -163,7 +164,7 @@ function renderConversation() {
   chatBox.replaceChildren();
   if (!conversation.length) {
     const { row } = makeMessage('assistant', 'Welcome. What’s been weighing on you lately? We can take it one step at a time.');
-    row.querySelector('.speaker').textContent = 'STILLPOINT';
+    row.querySelector('.speaker').textContent = 'EKAGRA';
     row.querySelector('time')?.remove();
     chatBox.append(row);
     return;
@@ -180,8 +181,11 @@ function saveConversation() {
 }
 
 try {
-  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  const current = localStorage.getItem(STORAGE_KEY);
+  const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+  const stored = JSON.parse(current || legacy || '[]');
   if (Array.isArray(stored)) conversation = stored.filter((item) => ['user', 'assistant'].includes(item.role) && typeof item.content === 'string');
+  if (!current && legacy) saveConversation();
 } catch { conversation = []; }
 renderConversation();
 
@@ -263,6 +267,7 @@ document.querySelectorAll('.suggestions button').forEach((button) => button.addE
 document.querySelector('#clear-chat').addEventListener('click', () => {
   conversation = [];
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(LEGACY_STORAGE_KEY);
   document.querySelector('#suggestions').classList.remove('hidden');
   renderConversation();
 });

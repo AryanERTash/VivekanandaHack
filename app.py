@@ -20,7 +20,7 @@ STATIC_DIR = PUBLIC_DIR / "static"
 IMAGE_DIR = PUBLIC_DIR / "images"
 load_dotenv(ROOT / ".env")
 
-app = FastAPI(title="Stillpoint — a reflective mentor")
+app = FastAPI(title="Ekagra — a reflective mentor")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/images", StaticFiles(directory=IMAGE_DIR), name="images")
 
@@ -156,7 +156,7 @@ async def chat(request: ChatRequest) -> StreamingResponse:
                 messages: list[dict[str, str]] = [{
                     "role": "system",
                     "content": (
-                        "You are Stillpoint, a reflective mentor inspired by Swami Vivekananda's documented writings. "
+                        "You are Ekagra, a reflective mentor inspired by Swami Vivekananda's documented writings. "
                         "Never impersonate him. Treat the retrieved passages as the only source for any attributed teaching. "
                         "Do not invent or loosely paraphrase a quotation as if exact. When using a passage, refer to its title; "
                         "the interface separately displays its source and labels your words as interpretation. If no relevant "

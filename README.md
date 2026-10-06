@@ -1,6 +1,6 @@
-# Stillpoint
+# Ekagra
 
-Stillpoint is a responsive reflective mentor inspired by Swami Vivekananda's documented writings. It keeps excerpts and AI interpretation visibly separate, links passages to their sources, and encourages the visitor to decide on a next step for themselves.
+Ekagra is a responsive reflective mentor inspired by Swami Vivekananda's documented writings. It keeps excerpts and AI interpretation visibly separate, links passages to their sources, and encourages the visitor to decide on a next step for themselves.
 
 ## Run locally
 
