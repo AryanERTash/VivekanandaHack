@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f3e9">
+  <meta name="description" content="A thoughtful space for reflection, inspired by Swami Vivekananda's documented writings.">
+  <title>Stillpoint — a reflective mentor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="Stillpoint home"><span class="brand-mark">s</span><span>stillpoint<small>REFLECT · RECONNECT · RISE</small></span></a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <button class="nav-link active" data-view="mentor">Mentor</button>
+      <button class="nav-link" data-view="practice">Practices</button>
+      <button class="nav-link" data-view="quiz">Wisdom quiz</button>
+    </nav>
+    <button class="quiet-button" id="clear-chat" title="Clear saved conversation">Reset chat <span>↺</span></button>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="sun-dot"></span> A SPACE TO FIND YOUR NEXT STEP</div>
+        <h1>Pause. Reflect.<br><em>Find your way forward.</em></h1>
+        <p>A thoughtful companion for life’s difficult moments, inspired by the documented teachings of Swami Vivekananda.</p>
+        <div class="hero-points"><span><b>✳</b> Grounded in real writings</span><span><b>✳</b> Made for your own reflection</span></div>
+      </div>
+      <div class="hero-art" aria-label="Illustration of Swami Vivekananda">
+        <div class="art-halo"></div><div class="art-sun"></div>
+        <img src="/images/vivekananda-hand-crossed-looking%20ahead.png" alt="Swami Vivekananda with arms crossed">
+        <div class="art-caption"><span>INSPIRED BY</span><strong>Swami Vivekananda</strong><small>1863 — 1902</small></div>
+        <span class="art-star star-one">✳</span><span class="art-star star-two">✦</span>
+      </div>
+      <div class="hero-rule"><span></span></div>
+    </section>
+
+    <section class="content-wrap">
+      <div class="section-heading"><div><div class="eyebrow">YOUR REFLECTION SPACE</div><h2 id="section-title">What’s on your mind?</h2></div><div class="privacy-note"><span class="lock-icon">⌑</span> Chat history is saved in this browser</div></div>
+      <section class="view-panel" id="view-mentor">
+        <div class="mentor-grid">
+          <div class="chat-card panel-card">
+            <div class="card-top"><div class="mentor-avatar">✧</div><div><strong>Your reflective mentor</strong><small>Here to help you think things through</small></div><span class="online-dot"></span></div>
+            <div class="chat-scroll" id="chat-messages" aria-live="polite">
+              <div class="message assistant-message"><div class="message-avatar">s</div><div class="bubble-wrap"><span class="speaker">STILLPOINT</span><div class="bubble">Welcome. What’s been weighing on you lately? We can take it one step at a time.</div><time>Just now</time></div></div>
+            </div>
+            <div class="suggestions" id="suggestions"><button>I'm doubting myself</button><button>I have a difficult decision</button><button>I'm feeling overwhelmed</button></div>
+            <form id="chat-form" class="chat-form"><label class="sr-only" for="chat-input">Share what's on your mind</label><textarea id="chat-input" rows="1" maxlength="3000" placeholder="Share what’s on your mind…" required></textarea><button class="send-button" type="submit" aria-label="Send message">↑</button><div class="input-foot"><span>Messages go to Groq when AI is enabled</span><span>Enter to send · Shift+Enter for a new line</span></div></form>
+            <div class="chat-disclaimer">AI reflection tool · not Swami Vivekananda · not a substitute for professional support.</div>
+          </div>
+          <aside class="side-column">
+            <article class="quote-card panel-card">
+              <div class="quote-overline"><span>✳</span> A THOUGHT TO CARRY</div>
+              <div class="quote-content" id="featured-quote"><span class="quote-mark">“</span><p>Finding a documented passage from the supplied writings…</p><div class="quote-source-note">Every excerpt is linked to its source.</div></div>
+              <div class="quote-footer"><span>FROM THE COMPLETE WORKS</span><button id="new-quote" aria-label="Find another passage">↻</button></div>
+            </article>
+            <article class="reflection-card panel-card"><div class="reflection-icon">✦</div><div><div class="eyebrow">A GENTLE REMINDER</div><p>You don’t have to have it all figured out. One honest question can be a beginning.</p></div><img src="/images/vivekananda-standing.png" alt="" aria-hidden="true"></article>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view-panel hidden" id="view-practice">
+        <div class="practice-grid">
+          <article class="breath-card panel-card"><div class="eyebrow">A MOMENT TO RESET</div><h3>Let your breath<br>make some room.</h3><p>Follow a gentle rhythm: breathe in for 4, hold for 4, breathe out for 6. Stop if it feels uncomfortable.</p><div class="breathing-wrap"><div class="breathing-orbit orbit-a"></div><div class="breathing-orbit orbit-b"></div><div class="breathing-circle" id="breathing-circle"><span id="breath-label">Ready?</span><small id="breath-count">A quiet moment for you</small></div></div><div class="breath-controls"><button class="primary-button" id="breath-start">Begin breathing</button><span id="breath-rounds">No rush. Pause anytime.</span></div><div class="breath-disclaimer">Keep breathing naturally. Skip breath holds if they don’t feel right for you.</div></article>
+          <article class="grounding-card panel-card"><div class="eyebrow">COME BACK TO THE PRESENT</div><h3>A 5–4–3–2–1 grounding pause</h3><p>Slowly notice what’s around you. There’s no need to hurry.</p><div class="grounding-list"><label><span class="grounding-number">5</span><span><strong>things you can see</strong><small>Notice color, shape, light or shadow.</small></span><input type="checkbox"></label><label><span class="grounding-number">4</span><span><strong>things you can feel</strong><small>Notice the chair, your feet, the air.</small></span><input type="checkbox"></label><label><span class="grounding-number">3</span><span><strong>things you can hear</strong><small>Listen for sounds near or far away.</small></span><input type="checkbox"></label><label><span class="grounding-number">2</span><span><strong>things you can smell</strong><small>Take in the air around you.</small></span><input type="checkbox"></label><label><span class="grounding-number">1</span><span><strong>thing you can taste</strong><small>Notice your breath or a lingering taste.</small><input type="checkbox"></label></div><button id="grounding-reset" class="text-button">Start again ↺</button></article>
+        </div>
+        <div class="practice-footnote">These short practices may help you pause. Choose what feels comfortable, and stop whenever you want.</div>
+      </section>
+
+      <section class="view-panel hidden" id="view-quiz">
+        <div class="quiz-layout"><article class="quiz-intro panel-card"><div class="eyebrow">LEARN THROUGH REFLECTION</div><h3>Wisdom,<br>one question at a time.</h3><p>Explore ideas found in the writings and speeches. Each question links to a passage in the supplied source collection.</p><img src="/images/vivekananda-meditation.png" alt="Swami Vivekananda seated in meditation"></article><article class="quiz-card panel-card" id="quiz-content"><div class="quiz-loading">Gathering a few questions…</div></article></div>
+      </section>
+      <div class="source-principle"><span>✳</span><p><strong>Faithful to the source.</strong> Authentic excerpts are labeled and linked. Interpretations are written by AI and are clearly separate. Stillpoint never speaks as Swami Vivekananda.</p></div>
+    </section>
+  </main>
+  <footer><div class="footer-brand">stillpoint <span>·</span> A companion for thoughtful living</div><div>Built around documented writings. Guided by your own choices.</div></footer>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
