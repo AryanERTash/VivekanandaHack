@@ -5,6 +5,111 @@ const form = document.querySelector('#chat-form');
 const sendButton = document.querySelector('.send-button');
 let conversation = [];
 
+function appendInlineMarkdown(parent, text, finalizeMath) {
+  const tokenPattern = /(\$\$[\s\S]+?\$\$|\$[^$\n]+\$|\*\*[^*]+\*\*|__[^_]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~]+~~|`[^`]+`)/g;
+  let cursor = 0;
+  for (const match of text.matchAll(tokenPattern)) {
+    const token = match[0];
+    if (match.index > cursor) parent.append(document.createTextNode(text.slice(cursor, match.index)));
+    if (token.startsWith('$$') || token.startsWith('$')) {
+      const display = token.startsWith('$$');
+      const expression = token.slice(display ? 2 : 1, display ? -2 : -1).trim();
+      const math = document.createElement(display ? 'div' : 'span');
+      math.className = display ? 'markdown-math' : 'markdown-math-inline';
+      if (finalizeMath && window.katex) {
+        window.katex.render(expression, math, { displayMode: display, throwOnError: false, strict: 'ignore', output: 'htmlAndMathml' });
+      } else {
+        math.textContent = finalizeMath ? token : expression;
+        math.classList.add('math-pending');
+      }
+      parent.append(math);
+    } else {
+      const matchTag = token.startsWith('**') || token.startsWith('__') ? 'strong'
+        : token.startsWith('~~') ? 'del'
+          : token.startsWith('`') ? 'code' : 'em';
+      const markerLength = token.startsWith('**') || token.startsWith('__') || token.startsWith('~~') ? 2 : 1;
+      const inline = document.createElement(matchTag);
+      inline.textContent = token.slice(markerLength, -markerLength);
+      parent.append(inline);
+    }
+    cursor = match.index + token.length;
+  }
+  if (cursor < text.length) parent.append(document.createTextNode(text.slice(cursor)));
+}
+
+function renderMarkdown(element, markdown, finalizeMath = true) {
+  element.replaceChildren();
+  const lines = String(markdown || '').replace(/\r/g, '').split('\n');
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    if (!trimmed) { i++; continue; }
+
+    if (trimmed.startsWith('$$')) {
+      let expression = trimmed.slice(2);
+      if (expression.endsWith('$$') && expression.length > 2) expression = expression.slice(0, -2);
+      else {
+        const rows = [expression];
+        i++;
+        while (i < lines.length && !lines[i].trim().endsWith('$$')) rows.push(lines[i++]);
+        if (i < lines.length) rows.push(lines[i].trim().slice(0, -2));
+        expression = rows.join('\n').trim();
+      }
+      const math = document.createElement('div');
+      math.className = 'markdown-math';
+      if (finalizeMath && window.katex) window.katex.render(expression, math, { displayMode: true, throwOnError: false, strict: 'ignore', output: 'htmlAndMathml' });
+      else { math.textContent = finalizeMath ? `$$${expression}$$` : expression; math.classList.add('math-pending'); }
+      element.append(math);
+      i++;
+      continue;
+    }
+
+    const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      const node = document.createElement(heading[1].length === 1 ? 'h3' : 'h4');
+      appendInlineMarkdown(node, heading[2], finalizeMath);
+      element.append(node); i++; continue;
+    }
+
+    const bullet = trimmed.match(/^[-*+]\s+(.+)$/);
+    const numbered = trimmed.match(/^\d+[.)]\s+(.+)$/);
+    if (bullet || numbered) {
+      const list = document.createElement(bullet ? 'ul' : 'ol');
+      while (i < lines.length) {
+        const item = lines[i].trim().match(bullet ? /^[-*+]\s+(.+)$/ : /^\d+[.)]\s+(.+)$/);
+        if (!item) break;
+        const li = document.createElement('li');
+        appendInlineMarkdown(li, item[1], finalizeMath);
+        list.append(li); i++;
+      }
+      element.append(list); continue;
+    }
+
+    const quote = trimmed.match(/^>\s?(.*)$/);
+    if (quote) {
+      const blockquote = document.createElement('blockquote');
+      while (i < lines.length) {
+        const part = lines[i].trim().match(/^>\s?(.*)$/);
+        if (!part) break;
+        const paragraph = document.createElement('p');
+        appendInlineMarkdown(paragraph, part[1], finalizeMath);
+        blockquote.append(paragraph); i++;
+      }
+      element.append(blockquote); continue;
+    }
+
+    const paragraphLines = [];
+    while (i < lines.length && lines[i].trim() && !/^(#{1,3}\s|[-*+]\s|\d+[.)]\s|>\s?|\$\$)/.test(lines[i].trim())) {
+      paragraphLines.push(lines[i].trim()); i++;
+    }
+    if (!paragraphLines.length) { paragraphLines.push(lines[i]); i++; }
+    const paragraph = document.createElement('p');
+    appendInlineMarkdown(paragraph, paragraphLines.join(' '), finalizeMath);
+    element.append(paragraph);
+  }
+}
+
 function makeMessage(role, content, sources = [], typing = false) {
   const row = document.createElement('div');
   row.className = `message ${role === 'user' ? 'user-message' : 'assistant-message'}${typing ? ' typing' : ''}`;
@@ -18,7 +123,7 @@ function makeMessage(role, content, sources = [], typing = false) {
   speaker.textContent = role === 'user' ? 'YOU' : 'STILLPOINT · AI REFLECTION';
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
-  bubble.textContent = content;
+  renderMarkdown(bubble, content);
   if (sources.length) {
     const answerLayout = document.createElement('div');
     answerLayout.className = 'answer-layout';
@@ -37,7 +142,7 @@ function makeMessage(role, content, sources = [], typing = false) {
       sourceBox.append(link);
       if (source.excerpt) {
         const excerpt = document.createElement('div');
-        excerpt.textContent = `“${source.excerpt}${source.excerpt.length >= 340 ? '…' : ''}”`;
+        renderMarkdown(excerpt, `“${source.excerpt}${source.excerpt.length >= 340 ? '…' : ''}”`);
         sourceBox.append(excerpt);
       }
     });
@@ -123,7 +228,7 @@ async function sendMessage(text) {
           chatBox.append(assistant.row);
         } else if (event === 'token') {
           responseText += JSON.parse(data);
-          assistant.bubble.textContent = responseText;
+          renderMarkdown(assistant.bubble, responseText, false);
           assistant.row.classList.remove('typing');
           chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -131,7 +236,7 @@ async function sendMessage(text) {
       if (done) break;
     }
     if (!responseText) responseText = 'I’m here with you. Could you share a little more about what feels hardest right now?';
-    assistant.bubble.textContent = responseText;
+    renderMarkdown(assistant.bubble, responseText);
     assistant.row.classList.remove('typing');
     conversation.push({ role: 'assistant', content: responseText, sources: foundSources });
     saveConversation();

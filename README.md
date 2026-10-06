@@ -31,6 +31,7 @@ On the first retrieval request, the app reads the Markdown records in `data/`, e
 ## What’s included
 
 - Streaming FastAPI chat with Groq, source passages, and a non-impersonation prompt.
+- Safe rendering for basic chat Markdown and LaTeX math notation.
 - Local retrieval over the supplied writings.
 - Multiple-choice quiz with source links.
 - Guided paced breathing and a 5–4–3–2–1 grounding activity.

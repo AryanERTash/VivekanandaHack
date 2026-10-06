@@ -162,7 +162,10 @@ async def chat(request: ChatRequest) -> StreamingResponse:
                         "the interface separately displays its source and labels your words as interpretation. If no relevant "
                         "passage was retrieved, say so briefly and give general reflective support without attributing it to him. "
                         "Be warm, grounded, concise (120-180 words). Acknowledge the feeling without diagnosing. Ask one useful "
-                        "open question and suggest one small action the person chooses. Do not make promises or shame the user. "
+                        "open question and suggest one small action the person chooses. Use only basic Markdown: paragraphs, **bold**, *italics*, "
+                        "simple bullet or numbered lists, and headings up to ###. Never emit raw HTML, tables, or fenced code. When math is useful, "
+                        "write inline math as $expression$ and display math as $$expression$$. Do not add equations when they do not help. "
+                        "Do not make promises or shame the user. "
                         "For signs of immediate danger or self-harm, encourage reaching a trusted person and local emergency or crisis support.\n\n"
                         f"Retrieved passages from the supplied corpus:\n{contexts}"
                     ),
